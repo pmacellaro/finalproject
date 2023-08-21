@@ -16,7 +16,7 @@ class SignupResource(Resource):
         hashed_password = generate_password_hash(data['password'], method='sha256')
         new_user = User(username=data['username'], password=hashed_password)
         new_user.save_to_db()
-        return {'message': 'User created successfully'}, 201
+        return {'message': 'Profile Created!'}, 201
 
 class LoginResource(Resource):
     def post(self):
@@ -27,4 +27,4 @@ class LoginResource(Resource):
             token = jwt.encode({'username': user.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
             return {'token': token}, 200
 
-        return {'message': 'Invalid credentials'}, 401
+        return {'message': 'Invalid credentials, please try again.'}, 401
