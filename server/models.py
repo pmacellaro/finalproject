@@ -6,12 +6,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import db, bcrypt
 
-class User(db.Model):
+class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    _password_hash = db.Column(db.String(128), nullable=False)
 
     user_squishes = db.relationship('UserSquish', back_populates='user')
     squishes = association_proxy('user_squishes', 'squish')

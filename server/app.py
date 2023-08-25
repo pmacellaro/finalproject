@@ -5,6 +5,7 @@ from models import User, Squish, UserSquish
 import jwt
 import datetime
 from config import app, db, api, Migrate, Flask
+from sqlalchemy_serializer import SerializerMixin
 
 
 parser = reqparse.RequestParser()
@@ -14,8 +15,13 @@ parser.add_argument('password', type=str, required=True, help='Password is requi
 class UsersResource(Resource):
     def post(self):
         data = request.get_json()
+
+        existing_user = User.query.filter_by(username=data['name']).first()
+        if existing_user:
+            return make_response({'error': 'Username already exists'}, 409)  # 409 Conflict
+
         user = User(
-            name=data['name'],
+            username=data['name'],
             password_hash=data['password']
         )
         db.session.add(user)
@@ -66,7 +72,7 @@ api.add_resource(LogoutResource, '/logout')
 @app.before_request
 def check_logged_in():
     if (request.endpoint in ['users', 'login', 'logout'] and request.method != 'GET') \
-            or request.endpoint == 'authorize':
+            or request.endpoint == 'authorized':
         if not session.get('user_id'):
             return make_response({'error': "Unauthorized"}, 401)
 
