@@ -11,6 +11,7 @@ class User(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String)
     _password_hash = db.Column(db.String(128), nullable=False)
 
     user_squishes = db.relationship('UserSquish', back_populates='user')
